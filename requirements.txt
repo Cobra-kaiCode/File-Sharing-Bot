@@ -1,0 +1,15 @@
+pyrofork==2.3.61
+TgCrypto
+pyromod==1.5
+pymongo
+motor
+dnspython
+aiohttp
+python-dotenv
+pytz
+requests
+bs4
+aiofiles
+APScheduler
+schedule
+shortzy
