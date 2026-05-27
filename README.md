@@ -1,106 +1,209 @@
-# BotWorld4U FileStore Shortener Bot
+# 🚀 Advanced FileStore Shortner Referral Premium Bot
 
-Fill all setup in root `config.py`.
+An advanced Telegram File Sharing & Link Shortener Bot with premium system, referral rewards, force-subscribe support, admin controls, and secure file sharing.
 
-## Main features
-- Manual `/genlink` only: send file/message to bot PM, then reply `/genlink`.
-- Strict start-link tamper protection.
-- Secure shortener verification using one-time DB tokens. Weak `yu3elk...7` bypass is blocked.
-- Hidden shortener link system using Heroku Mini-App gateway.
-- Telegram verify button uses Heroku app URL, not the real shortener URL.
-- Every verify token is user-locked, one-time, and expires quickly.
-- Anti-bypass protection: too-fast verify return gives warning/block, 3 tries = ban.
-- Time-based verification mode supported.
-- Premium user system: premium users can skip shortener.
-- Primary DB channel + multiple extra DB channels.
-- Custom caption with `{filename}`, `{filesize}`, `{filetype}`, `{caption}`.
-- Caption applied while saving into DB channel and while delivering to user.
-- Force-sub channels with join-request mode.
-- Force-sub referral button.
-- Custom start/force messages and photos from bot PM.
-- Custom buttons from bot PM.
-- Restriction/protect content on/off.
-- Auto BotFather command setup on deploy/start.
-- Heroku web dyno auto start for bot + verify gateway.
-- `/checkdb`, `/ping`, `/logs`, `/restart`.
+This project is a modified and enhanced version of the original FileStore bot with additional premium features, improved management system, and custom optimizations.
 
-## Required config
+---
 
-Edit root `config.py`:
+# ✨ Features
 
-```python
-TG_BOT_TOKEN = "your token"
-APP_ID = 12345
-API_HASH = "your api hash"
-OWNER_ID = 123456789
-DATABASE_URL = "mongodb url"
-PRIMARY_DB_CHANNEL_ID = -100xxxxxxxxxx
-EXTRA_DB_CHANNEL_IDS = []
-FORCE_SUB_CHANNELS = []
-SHORTLINK_URL = "linkshortify.com"
-SHORTLINK_API = "your api"
+## 📁 File Sharing System
 
-# Important for hidden shortlink mini-app gateway:
-WEB_APP_URL = "https://your-heroku-app-name.herokuapp.com"
+* Store Telegram files permanently
+* Generate secure shareable links
+* Fast file retrieval system
+* Auto link generation
+* Protected content sharing
+
+## 🔗 URL Shortener Support
+
+* Integrated shortener system
+* Earn-based link support
+* Custom shortener compatibility
+* Faster redirection handling
+
+## 👑 Premium Features
+
+* Premium user system
+* Premium database support
+* Bypass waiting limitations for premium users
+* Advanced access management
+* Premium expiry support
+
+## 🎁 Referral System
+
+* User referral rewards
+* Invite tracking
+* Reward-based premium unlocking
+* Auto referral counting
+
+## 📢 Force Subscribe System
+
+* Mandatory channel join support
+* Multiple channel verification
+* Request join handling
+* Auto subscription checking
+
+## 🛠️ Admin Controls
+
+* Broadcast system
+* Ban / unban users
+* Maintenance mode
+* Settings manager
+* User management tools
+* Channel management
+
+## ⚡ Performance Improvements
+
+* Optimized bot handling
+* Better database management
+* Cleaner plugin structure
+* Faster response handling
+* Stable deployment support
+
+---
+
+# 📂 Project Structure
+
+```bash
+├── database/
+│   ├── database.py
+│   └── db_premium.py
+│
+├── plugins/
+│   ├── admin.py
+│   ├── banuser.py
+│   ├── broadcast.py
+│   ├── channel_post.py
+│   ├── link_generator.py
+│   ├── maintenance.py
+│   ├── request_fsub.py
+│   ├── route.py
+│   ├── settings.py
+│   └── start.py
+│
+├── bot.py
+├── main.py
+├── config.py
+├── requirements.txt
+└── Procfile
 ```
 
-Bot must be admin in every DB channel with post/delete permissions.
+---
 
-## Heroku process
+# ⚙️ Required Variables
 
-This version uses Heroku **web dyno**, because Heroku app URL only works on `web` process.
+Create a `.env` file or add variables in Heroku:
 
-`Procfile`:
-
-```text
-web: python3 main.py
+```env
+API_ID=
+API_HASH=
+BOT_TOKEN=
+MONGO_URI=
+ADMINS=
+CHANNEL_ID=
+LOG_CHANNEL=
+SHORTNER_API=
+SHORTNER_WEBSITE=
+BOT_USERNAME=
 ```
 
-The same process runs both:
+Additional premium/referral variables can also be configured depending on your setup.
 
-```text
-Telegram bot + Heroku verify gateway
+---
+
+# 🚀 Deployment
+
+## 🔹 Deploy on Heroku
+
+1. Fork this repository
+2. Create a new Heroku app
+3. Connect GitHub repository
+4. Add all required environment variables
+5. Deploy the app
+
+---
+
+## 🔹 Deploy Using Docker
+
+```bash
+git clone <your-repo-url>
+cd <repo-name>
+docker build -t filestore-bot .
+docker run filestore-bot
 ```
 
-Do not run a second worker dyno with the same bot token, otherwise Telegram polling can duplicate/conflict.
+---
 
-## Hidden shortlink flow
+# 📜 Commands
 
-```text
-User opens file link
-→ Bot creates unique verify token
-→ Bot creates real shortener link internally
-→ Bot stores real shortener link in MongoDB
-→ Telegram button shows only https://your-app.herokuapp.com/v/TOKEN
-→ Heroku mini-app opens
-→ Heroku redirects server-side to real shortener link
-→ Shortener finally returns user to /start verify_TOKEN
-→ Bot checks user ID, token age, expiry, bypass warnings
-→ File is sent if valid
-```
+## 👤 User Commands
 
-So the real shortener URL is not shown in the Telegram message/button.
+* `/start` — Start the bot
+* `/help` — Show help menu
+* `/about` — About the bot
 
-Credit: @BotWorld4U
+## 👑 Admin Commands
 
-## Referral + Premium Reward System
+* `/broadcast` — Send broadcast message
+* `/ban` — Ban user
+* `/unban` — Unban user
+* `/maintenance` — Enable/disable maintenance
+* `/stats` — Bot statistics
 
-- Users can run `/referral` to get their personal invite link.
-- Invite link format: `https://t.me/YourBot?start=ref_USERID`.
-- A referral is counted only after the invited user joins all force-sub channels and opens the bot again.
-- Default reward: every 10 valid referrals gives 7 days premium.
-- When reward is given, bot sends a log message to the primary DB channel with inviter + referred user info.
-- `/premium` shows payment details and free referral premium method.
+---
 
-Configure in root `config.py`:
+# 🧩 Tech Stack
 
-```python
-OWNER_TAG = "AnimeEmperor"
-UPI_ID = "your-upi-id@upi"
-QR_PIC = "https://telegra.ph/file/your_qr.jpg"
-SCREENSHOT_URL = "https://t.me/BotWorld4U"
-PREMIUM_BUTTON_TEXT = "💎 Buy Premium / Send Screenshot"
-PREMIUM_BUTTON_URL = SCREENSHOT_URL
-REFERRAL_REWARD_COUNT = 10
-REFERRAL_REWARD_DAYS = 7
-```
+* Python 3
+* Pyrogram
+* MongoDB
+* Telegram Bot API
+* Heroku / Docker
+
+---
+
+# 🙌 Credits
+
+## 🌟 Base Repository
+
+Base repo credits go to:
+
+* urlCodeflix-Bots FileStore Repository[https://github.com/Codeflix-Bots/FileStore.git](https://github.com/Codeflix-Bots/FileStore.git)
+
+---
+
+## 🔥 Advanced Modification & Feature Development
+
+Main owner and advanced feature provider:
+
+* Telegram Channel: @BotWorld4U
+
+### 👨‍💻 Developers
+
+* @Truly_Innocent
+* @AnimeEmperor
+
+---
+
+# ⚠️ Disclaimer
+
+This project is made for educational and personal usage purposes only.
+Use responsibly and follow Telegram Terms of Service.
+
+---
+
+# ⭐ Support
+
+If you like this project:
+
+* Star the repository ⭐
+* Share with others 📢
+* Support the developers ❤️
+
+---
+
+# 💖 Thank You
+
+Thanks for using this Advanced FileStore Premium Bot.
